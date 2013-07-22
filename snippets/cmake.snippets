@@ -1,58 +1,89 @@
 snippet cmake
-	CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-	PROJECT(${1:ProjectName})
+	cmake_minimum_required(VERSION 2.6)
+	project(${1:ProjectName})
 
-	FIND_PACKAGE(${2:LIBRARY})
+	find_package(${2:LIBRARY})
 
-	INCLUDE_DIRECTORIES(
-		${$2_INCLUDE_DIR}
+	include_directories(
+	    ${$2_INCLUDE_DIR}
 	)
 
-	ADD_SUBDIRECTORY(${3:src})
+	add_subdirectory(${3:src})
 
-	ADD_EXECUTABLE($1)
+	add_executable($1)
 
-	TARGET_LINK_LIBRARIES($1
-		${$2_LIBRARIES}
+	target_link_libraries($1
+	    ${$2_LIBRARIES}
 	)
+
+snippet boost
+	set(Boost_USE_MULTITHREADED OFF)
+	find_package(Boost ${1:1.45.0})
+
+	if(NOT Boost_FOUND)
+	    message(FATAL_ERROR "Boost not found!")
+	else(NOT Boost_FOUND)
+	    include_directories(${Boost_INCLUDE_DIRS})
+	    link_directories(${Boost_LIBRARY_DIRS})
+	endif(NOT Boost_FOUND)
+
+snippet qt4
+	find_package(Qt4 REQUIRED)
+	include(${QT_USE_FILE})
+
+snippet insth
+	foreach(_header ${1:EXPORTED_HEADERS})
+	    get_filename_component(_header_path ${_header} PATH)
+	    install(FILES ${_header} DESTINATION include/$2/${_header_path}) 
+	endforeach(_header $1)
 
 snippet include
-	INCLUDE_DIRECTORIES(
-		${${1:INCLUDE_DIR}}
+	include_directories(
+	    ${${1:INCLUDE_DIR}}
 	)
 
 snippet find
-	FIND_PACKAGE(${1:LIBRARY})
+	find_package(${1:LIBRARY})
 
 snippet glob
-	FILE(GLOB ${1:SRCS} *.${2:cpp})
+	file(GLOB ${1:SRCS} *.${2:cpp})
 
 snippet subdir
-	ADD_SUBDIRECTORY(${1:src})
+	add_subdirectory(${1:src})
 
 snippet lib
-	ADD_LIBRARY(${1:lib} ${2:STATIC}
-		${${3:SRCS}}
+	add_library(${1:lib} ${2:STATIC}
+	    ${${3:SRCS}}
 	)
+
+snippet libi
+	add_library(${1:lib} ${2:STATIC}
+	    ${${3:SRCS}}
+	)
+	install(TARGETS $1 DESTINATION ${4:lib})
 
 snippet link
-	TARGET_LINK_LIBRARIES(${1:bin}
-		${2:somelib}
+	target_link_libraries(${1:bin}
+	    ${2:somelib}
 	)
-
+	
 snippet bin
-	ADD_EXECUTABLE(${1:bin})
+	add_executable(${1:bin})
+
+snippet bini
+	add_executable(${1:bin})
+	install(TARGETS $1 DESTINATION ${2:bin})
 
 snippet set
-	SET(${1:var} ${2:val})
+	set(${1:var} ${2:val})
 
 snippet dep
-	ADD_DEPENDENCIES(${1:target}
-		${2:dep}
+	add_dependencies(${1:target}
+	    ${2:dep}
 	)
 
 snippet props
-	SET_TARGET_PROPERTIES(${1:target}
-		${2:PROPERTIES} ${3:COMPILE_FLAGS}
-		${4:"-O3 -Wall -pedantic"}
+	set_target_properties(${1:target} 
+	    ${2:PROPERTIES} ${3:COMPILE_FLAGS} 
+	    ${4:"-O3 -Wall -pedantic"}
 	)
